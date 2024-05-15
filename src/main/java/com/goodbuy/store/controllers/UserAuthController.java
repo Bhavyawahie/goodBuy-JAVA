@@ -21,21 +21,21 @@ import java.util.Map;
 @RequestMapping(value = "/api/v1/auth")
 @RequiredArgsConstructor
 public class UserAuthController {
-    @Autowired
-    private UserAuthService userAuthService;
+	@Autowired
+	private UserAuthService userAuthService;
 
-    @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDTO userRegistrationDTO) {
-        if (userAuthService.findUserByEmail(userRegistrationDTO.getEmail())) {
-            Map<String, String> responseBody = new HashMap<>();
-            responseBody.put("error", "User already exists");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
-        }
-        return ResponseEntity.ok(userAuthService.registerUser(userRegistrationDTO));
-    }
+	@PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> registerUser(@RequestBody UserRegistrationDTO userRegistrationDTO) {
+		if (userAuthService.findUserByEmail(userRegistrationDTO.getEmail())) {
+			Map<String, String> responseBody = new HashMap<>();
+			responseBody.put("error", "User already exists");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
+		}
+		return ResponseEntity.ok(userAuthService.registerUser(userRegistrationDTO));
+	}
 
-    @PostMapping("/login")
-    public ResponseEntity<UserAuthResponseDTO> authenticateUser(@RequestBody UserLoginDTO userLoginDTO) {
-        return ResponseEntity.ok(userAuthService.loginUser(userLoginDTO));
-    }
+	@PostMapping("/login")
+	public ResponseEntity<UserAuthResponseDTO> authenticateUser(@RequestBody UserLoginDTO userLoginDTO) {
+		return ResponseEntity.ok(userAuthService.loginUser(userLoginDTO));
+	}
 }

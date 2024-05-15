@@ -6,8 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class ForbiddenErrorResponseDTO {
-    private int status;
-    private String error;
-    private String message;
-
+	private int status;
+	private String error;
+	private String message;
 }

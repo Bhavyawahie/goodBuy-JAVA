@@ -16,19 +16,19 @@ import java.io.IOException;
 @Component
 @AllArgsConstructor
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
-    private final ObjectMapper objectMapper;
+	private final ObjectMapper objectMapper;
 
-    @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        ForbiddenErrorResponseDTO errorResponse = ForbiddenErrorResponseDTO
-                .builder()
-                .status(HttpStatus.FORBIDDEN.value())
-                .error("Forbidden")
-                .message("Access denied")
-                .build();
+	@Override
+	public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+		ForbiddenErrorResponseDTO errorResponse = ForbiddenErrorResponseDTO
+				.builder()
+				.status(HttpStatus.FORBIDDEN.value())
+				.error("Forbidden")
+				.message("Access denied")
+				.build();
 
-        response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setContentType("application/json");
-        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-    }
+		response.setStatus(HttpStatus.FORBIDDEN.value());
+		response.setContentType("application/json");
+		response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+	}
 }

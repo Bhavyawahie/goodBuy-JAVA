@@ -20,27 +20,27 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfiguration {
-    private final AuthenticationProvider authenticationProvider;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req ->
-                        req.requestMatchers("/api/v1/auth/**")
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated()
-                )
-                .exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler()))
-                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+	private final AuthenticationProvider authenticationProvider;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http
+				.csrf(AbstractHttpConfigurer::disable)
+				.authorizeHttpRequests(req ->
+						req.requestMatchers("/api/v1/auth/**")
+								.permitAll()
+								.anyRequest()
+								.authenticated()
+				)
+				.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler()))
+				.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+				.authenticationProvider(authenticationProvider)
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
-    @Bean
-    public CustomAccessDeniedHandler accessDeniedHandler() {
-        return new CustomAccessDeniedHandler(new ObjectMapper());
-    }
+		return http.build();
+	}
+	@Bean
+	public CustomAccessDeniedHandler accessDeniedHandler() {
+		return new CustomAccessDeniedHandler(new ObjectMapper());
+	}
 }
