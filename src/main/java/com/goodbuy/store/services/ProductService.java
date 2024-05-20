@@ -5,8 +5,6 @@ import com.goodbuy.store.dto.ProductDTO;
 import com.goodbuy.store.dto.UserDTO;
 import com.goodbuy.store.entity.Product;
 import com.goodbuy.store.entity.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +20,6 @@ import java.util.stream.Collectors;
 public class ProductService {
 	@Autowired
 	private ProductDAO productDAO;
-	private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 	public List<ProductDTO> getAllProducts() {
 		return productDAO.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
@@ -36,7 +33,6 @@ public class ProductService {
 	}
 
 	public List<ProductDTO> getProductByCategoryAndKeyword(String category, String keyword) {
-		logger.debug("hi");
 		return productDAO.findByCategoryAndKeywordContainingIgnoreCase(category,keyword).stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
