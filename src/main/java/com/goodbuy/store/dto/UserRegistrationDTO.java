@@ -1,6 +1,7 @@
 package com.goodbuy.store.dto;
 
 
+import com.goodbuy.store.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,4 +15,5 @@ public class UserRegistrationDTO {
 	private String name;
 	private String email;
 	private String password;
+	private Role role = Role.USER;
 }

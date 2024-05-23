@@ -2,6 +2,7 @@ package com.goodbuy.store.controllers;
 
 import com.goodbuy.store.dto.UserLoginDTO;
 import com.goodbuy.store.dto.UserRegistrationDTO;
+import com.goodbuy.store.entity.Role;
 import com.goodbuy.store.services.UserAuthService;
 import com.goodbuy.store.dto.UserAuthResponseDTO;
 import lombok.RequiredArgsConstructor;
