@@ -14,6 +14,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class UserAuthService {
 	private final AuthenticationManager authenticationManager;
 
 	public UserAuthResponseDTO registerUser(UserRegistrationDTO userDTO) {
-		var user = User.builder().name(userDTO.getName()).email(userDTO.getEmail()).password(passwordEncoder.encode(userDTO.getPassword())).role(Role.USER).build();
+		var user = User.builder().name(userDTO.getName()).email(userDTO.getEmail()).password(passwordEncoder.encode(userDTO.getPassword())).role(userDTO.getRole()).build();
 		var savedUser = userDAO.save(user);
 		var jwtToken = jwtService.generateToken(user);
 		return UserAuthResponseDTO.builder().id(savedUser.getId()).name(savedUser.getName()).email(savedUser.getEmail()).role(savedUser.getRole()).token(jwtToken).build();
@@ -34,7 +37,11 @@ public class UserAuthService {
 	public UserAuthResponseDTO loginUser(UserLoginDTO userLoginDTO) {
 		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLoginDTO.getEmail(), userLoginDTO.getPassword()));
 		var user = userDAO.findByEmail(userLoginDTO.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User " + userLoginDTO.getEmail() + " not found"));
-		var jwtToken = jwtService.generateToken(user);
+		Boolean admin = user.getRole().equals(Role.ADMIN);
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("isAdmin", admin);
+		claims.put("userId", user.getId());
+		var jwtToken = jwtService.generateToken(claims, user);
 		return UserAuthResponseDTO.builder().id(user.getId()).name(user.getName()).email(user.getEmail()).role(user.getRole()).token(jwtToken).build();
 
 	}

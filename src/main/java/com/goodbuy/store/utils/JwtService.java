@@ -56,7 +56,7 @@ public class JwtService {
 		return extractClaim(token, Claims::getExpiration);
 	}
 
-	private Claims extractClaims(String token) {
+	public Claims extractClaims(String token) {
 		return
 				Jwts
 						.parserBuilder()
@@ -70,4 +70,5 @@ public class JwtService {
 		byte[] keyBytes = Decoders.BASE64.decode(JWT_SECRET);
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
+
 }
