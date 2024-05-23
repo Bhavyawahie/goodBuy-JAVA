@@ -1,6 +1,8 @@
 package com.goodbuy.store.services;
 
 import com.goodbuy.store.dao.ProductDAO;
+import com.goodbuy.store.dao.UserDAO;
+import com.goodbuy.store.dto.ProductUpdateDTO;
 import com.goodbuy.store.dto.ProductDTO;
 import com.goodbuy.store.dto.UserDTO;
 import com.goodbuy.store.entity.Product;
@@ -21,6 +23,9 @@ import java.util.stream.Collectors;
 public class ProductService {
 	@Autowired
 	private ProductDAO productDAO;
+	@Autowired
+	private UserDAO userDAO;
+
 	public List<ProductDTO> getAllProducts() {
 		return productDAO.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
@@ -53,17 +58,35 @@ public class ProductService {
 		}
 	}
 
+	public ProductDTO addProduct(int userId) {
+		User user = userDAO.findById((long) userId).get();
+		Product product = new Product().builder()
+				.user(user)
+				.name("Sample name")
+				.image("/images/sample.jpeg")
+				.brand("ACME")
+				.category("Sample category")
+				.description("Sample description")
+				.rating(0.0)
+				.numReviews(0l)
+				.price(0l)
+				.countInStock(0l)
+				.build();
+		return convertToDTO(productDAO.save(product));
+	}
+
 	private ProductDTO convertToDTO(Product product) {
 		ProductDTO productDTO = new ProductDTO();
 		User productUser = product.getUser();
 		UserDTO userDTO = UserDTO.builder()
-				.id(productUser.getId())
+				._id(productUser.getId())
 				.name(productUser.getName())
 				.email(productUser.getEmail())
 				.isAdmin(Objects.equals(productUser.getRole().toString(), "ADMIN"))
 				.build();
 		BeanUtils.copyProperties(product, productDTO);
 		productDTO.setUser(userDTO);
+		productDTO.set_id(product.getId());
 		return productDTO;
 	}
 
@@ -75,4 +98,5 @@ public class ProductService {
 		productDAO.deleteById(id);
 		return Map.of("message", "Product Deleted");
 	}
+
 }

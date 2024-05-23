@@ -2,13 +2,16 @@ package com.goodbuy.store.controllers;
 
 import com.goodbuy.store.dto.ErrorResponseDTO;
 import com.goodbuy.store.dto.ProductDTO;
+import com.goodbuy.store.dto.ProductUpdateDTO;
 import com.goodbuy.store.services.ProductService;
 import com.goodbuy.store.utils.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +25,7 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 	@Autowired
-	private JwtService jwtService;
+	private HttpServletRequest context;
 
 	@GetMapping(value = "/")
 	public ResponseEntity<List<ProductDTO>> getProducts(@RequestParam(required = false) String keyword,
@@ -47,6 +50,11 @@ public class ProductController {
 		return new ResponseEntity<>(products, HttpStatus.OK);
 	}
 
+	@PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProductDTO> createProduct() {
+		return new ResponseEntity<>(productService.addProduct((Integer) context.getAttribute("userId")), HttpStatus.CREATED);
+	}
+
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<?> getProductById(@PathVariable long id) {
 		Optional<ProductDTO> product = productService.getProductById(id);
@@ -65,9 +73,5 @@ public class ProductController {
 		}
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
-
-//	public ResponseEntity<?> addProduct(Long userId, String name, String image, String brand, String category, String description, Double rating, Integer numReviews, Double price, Integer countInStock) {
-//
-//	}
 
 }
