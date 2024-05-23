@@ -15,12 +15,15 @@ public class ProductAdminOnlyRouteInterceptor implements HandlerInterceptor {
 	@Autowired
 	private JwtService jwtService;
 	public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws Exception {
-		final String authorizationHeader = request.getHeader("Authorization");
-		final String token = authorizationHeader.substring(7);
-		Claims claims = jwtService.extractClaims(token);
 		if (request.getMethod().equals("GET")) {
 			return true;
 		}
+		if(request.getHeader("Authorization") == null) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		}
+		final String authorizationHeader = request.getHeader("Authorization");
+		final String token = authorizationHeader.substring(7);
+		Claims claims = jwtService.extractClaims(token);
 		if(claims.containsKey("isAdmin") && claims.get("isAdmin").equals(true)) {
 			return true;
 		}

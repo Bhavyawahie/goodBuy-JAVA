@@ -1,8 +1,6 @@
 package com.goodbuy.store.configuration;
 
 import com.goodbuy.store.dao.UserDAO;
-import com.goodbuy.store.interceptors.ProductAdminOnlyRouteInterceptor;
-import com.goodbuy.store.interceptors.UserAdminOnlyRouteInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -45,7 +43,6 @@ public class AppConfiguration implements WebMvcConfigurer {
 		return authProvider;
 	}
 
-
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
 		return configuration.getAuthenticationManager();
@@ -58,7 +55,7 @@ public class AppConfiguration implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(ProductAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/products/{id}");
-		registry.addInterceptor(UserAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/users/{id}").excludePathPatterns("/api/v1/users/profile");
+		registry.addInterceptor(ProductAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/products/","/api/v1/products/{id}");
+		registry.addInterceptor(UserAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/users/**").excludePathPatterns("/api/v1/users/profile");
 	}
 }

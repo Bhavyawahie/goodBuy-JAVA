@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,13 +30,18 @@ public class SecurityConfiguration {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 				.csrf(AbstractHttpConfigurer::disable)
+				.securityMatcher("/api/v1/products/")
+				.authorizeHttpRequests(req ->
+						req.requestMatchers(HttpMethod.GET).permitAll()
+
+				)
+				.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler()))
 				.authorizeHttpRequests(req ->
 						req.requestMatchers("/api/v1/auth/**")
 								.permitAll()
 								.anyRequest()
 								.authenticated()
 				)
-				.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler()))
 				.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
 				.authenticationProvider(authenticationProvider)
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
