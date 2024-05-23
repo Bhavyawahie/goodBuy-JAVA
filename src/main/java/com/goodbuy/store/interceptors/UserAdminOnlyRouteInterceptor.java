@@ -18,6 +18,9 @@ public class UserAdminOnlyRouteInterceptor implements HandlerInterceptor {
 		final String authorizationHeader = request.getHeader("Authorization");
 		final String token = authorizationHeader.substring(7);
 		Claims claims = jwtService.extractClaims(token);
+		if(request.getHeader("Authorization") == null) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		}
 
 		if(claims.containsKey("isAdmin") && claims.get("isAdmin").equals(true)) {
 			return true;
