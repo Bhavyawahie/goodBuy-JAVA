@@ -1,13 +1,12 @@
 package com.goodbuy.store.controllers;
 
-import com.goodbuy.store.dto.UserDTO;
+import com.goodbuy.store.dto.*;
+import com.goodbuy.store.services.ProductService;
 import com.goodbuy.store.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +23,12 @@ public class UserController {
 	private HttpServletRequest context;
 	@Autowired
 	private UserService userService;
+
+	@GetMapping("/")
+	public ResponseEntity<List<UserDTO>> getAllUsers() {
+		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getUser(@PathVariable long id) {
 		Optional<UserDTO> user = userService.getUserById(id);
@@ -34,7 +39,7 @@ public class UserController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody UserDTO userDTO) {
+	public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody UserAdminOnlyUpdateDTO userDTO) {
 		Optional<UserDTO> user = userService.getUserById(id);
 		if(user.isEmpty()) {
 			return new ResponseEntity<>(Map.of("error", "User not found"), HttpStatus.NOT_FOUND);
@@ -53,11 +58,12 @@ public class UserController {
 
 	@GetMapping("/profile")
 	public ResponseEntity<?> getUserProfile() {
-		Optional<UserDTO> user = userService.getUserById((int)context.getAttribute("userId"));
-		if(user.isEmpty()) {
-			return new ResponseEntity<>(Map.of("error", "User not found"), HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(user.get(), HttpStatus.OK);
+		return new ResponseEntity<>(userService.getUserById((int)context.getAttribute("userId")).get(), HttpStatus.OK);
+	}
+
+	@PutMapping(value = "/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> updateUserProfile(@RequestBody UserUpdateDTO userDTO) {
+		return new ResponseEntity<>(userService.updateUserProfile((int)context.getAttribute("userId"), userDTO), HttpStatus.OK);
 	}
 
 }
