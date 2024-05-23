@@ -1,11 +1,13 @@
 package com.goodbuy.store.services;
 
 import com.goodbuy.store.dao.ProductDAO;
+import com.goodbuy.store.dao.ProductReviewDAO;
 import com.goodbuy.store.dao.UserDAO;
-import com.goodbuy.store.dto.ProductUpdateDTO;
 import com.goodbuy.store.dto.ProductDTO;
+import com.goodbuy.store.dto.ReviewDTO;
 import com.goodbuy.store.dto.UserDTO;
 import com.goodbuy.store.entity.Product;
+import com.goodbuy.store.entity.Review;
 import com.goodbuy.store.entity.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ public class ProductService {
 	private ProductDAO productDAO;
 	@Autowired
 	private UserDAO userDAO;
+	@Autowired
+	private ProductReviewDAO productReviewDAO;
 
 	public List<ProductDTO> getAllProducts() {
 		return productDAO.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
@@ -75,6 +79,33 @@ public class ProductService {
 		return convertToDTO(productDAO.save(product));
 	}
 
+
+	public Optional<ProductDTO> getProductById(long id) {
+		return productDAO.findById(id).map(this::convertToDTO);
+	}
+
+	public Map<String, String> deleteProduct(long id) {
+		productDAO.deleteById(id);
+		return Map.of("message", "Product Deleted");
+	}
+
+	public Map<String, String> addProductReview(long id, long userId, ReviewDTO review) {
+		int numberOfReviewsByAUser = productReviewDAO.findByProductIdAndUserId(id, userId).size();
+		if (numberOfReviewsByAUser > 0) {
+			return Map.of("message", "Product Review already exists");
+		}
+		Review newReview = Review.builder()
+				.title(review.getTitle())
+				.rating(review.getRating())
+				.comment(review.getComment())
+				.product(productDAO.findById(id).get())
+				.user(userDAO.findById(userId).get())
+				.build();
+
+		productReviewDAO.save(newReview);
+		return Map.of("message", "Product Review added");
+	}
+
 	private ProductDTO convertToDTO(Product product) {
 		ProductDTO productDTO = new ProductDTO();
 		User productUser = product.getUser();
@@ -88,15 +119,6 @@ public class ProductService {
 		productDTO.setUser(userDTO);
 		productDTO.set_id(product.getId());
 		return productDTO;
-	}
-
-	public Optional<ProductDTO> getProductById(long id) {
-		return productDAO.findById(id).map(this::convertToDTO);
-	}
-
-	public Map<String, String> deleteProduct(long id) {
-		productDAO.deleteById(id);
-		return Map.of("message", "Product Deleted");
 	}
 
 }

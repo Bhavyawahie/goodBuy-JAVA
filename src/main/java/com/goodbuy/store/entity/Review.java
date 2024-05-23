@@ -22,4 +22,7 @@ public class Review {
 	@ManyToOne(fetch = FetchType.LAZY) // Many reviews can have one product
 	@JoinColumn(name = "productId") // Specify foreign key column
 	private Product product;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "userId")
+	private User user;
 }

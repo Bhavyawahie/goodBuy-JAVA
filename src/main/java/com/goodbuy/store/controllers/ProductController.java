@@ -2,9 +2,8 @@ package com.goodbuy.store.controllers;
 
 import com.goodbuy.store.dto.ErrorResponseDTO;
 import com.goodbuy.store.dto.ProductDTO;
-import com.goodbuy.store.dto.ProductUpdateDTO;
+import com.goodbuy.store.dto.ReviewDTO;
 import com.goodbuy.store.services.ProductService;
-import com.goodbuy.store.utils.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -72,6 +71,15 @@ public class ProductController {
 			return new ResponseEntity<>(productService.deleteProduct(id), HttpStatus.OK);
 		}
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+
+	@PostMapping("/{id}/reviews")
+	public ResponseEntity<?> addProductReview(@PathVariable Long id, @RequestBody ReviewDTO review) {
+		Optional<ProductDTO> product = productService.getProductById(id);
+		if(product.isEmpty()) {
+			return new ResponseEntity<>(Map.of("message", "Product doesn't exist!"), HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(productService.addProductReview(id, (int) context.getAttribute("userId"),review), HttpStatus.CREATED);
 	}
 
 }
