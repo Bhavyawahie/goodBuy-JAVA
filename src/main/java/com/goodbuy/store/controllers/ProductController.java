@@ -3,6 +3,7 @@ package com.goodbuy.store.controllers;
 import com.goodbuy.store.dto.ErrorResponseDTO;
 import com.goodbuy.store.dto.ProductDTO;
 import com.goodbuy.store.services.ProductService;
+import com.goodbuy.store.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,8 @@ import java.util.Optional;
 public class ProductController {
 	@Autowired
 	private ProductService productService;
+	@Autowired
+	private JwtService jwtService;
 
 	@GetMapping(value = "/")
 	public ResponseEntity<List<ProductDTO>> getProducts(@RequestParam(required = false) String keyword,
@@ -44,13 +47,27 @@ public class ProductController {
 		return new ResponseEntity<>(products, HttpStatus.OK);
 	}
 
-	@GetMapping(value ="/{id}")
-	public ResponseEntity<ProductDTO> getProductById(@PathVariable long id) {
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<?> getProductById(@PathVariable long id) {
 		Optional<ProductDTO> product = productService.getProductById(id);
 		if (product.isEmpty()) {
-			ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.builder().error(Map.of("message", "product with " + id + " doent'nt exist!")).build();
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.builder().error(Map.of("message", "Product doesn't exist!")).build();
+			return new ResponseEntity<>(errorResponseDTO, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(product.get(), HttpStatus.OK);
 	}
+
+	@DeleteMapping(value="/{id}")
+	public ResponseEntity<?> deleteProductById(@PathVariable long id) {
+		Optional<ProductDTO> product = productService.getProductById(id);
+		if(product.isPresent()) {
+			return new ResponseEntity<>(productService.deleteProduct(id), HttpStatus.OK);
+		}
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+
+//	public ResponseEntity<?> addProduct(Long userId, String name, String image, String brand, String category, String description, Double rating, Integer numReviews, Double price, Integer countInStock) {
+//
+//	}
+
 }
