@@ -13,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -64,10 +66,10 @@ public class ProductController {
 		return new ResponseEntity<>(product.get(), HttpStatus.OK);
 	}
 
-	@DeleteMapping(value="/{id}")
+	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<?> deleteProductById(@PathVariable long id) {
 		Optional<ProductDTO> product = productService.getProductById(id);
-		if(product.isPresent()) {
+		if (product.isPresent()) {
 			return new ResponseEntity<>(productService.deleteProduct(id), HttpStatus.OK);
 		}
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -76,10 +78,15 @@ public class ProductController {
 	@PostMapping("/{id}/reviews")
 	public ResponseEntity<?> addProductReview(@PathVariable Long id, @RequestBody ReviewDTO review) {
 		Optional<ProductDTO> product = productService.getProductById(id);
-		if(product.isEmpty()) {
+		if (product.isEmpty()) {
 			return new ResponseEntity<>(Map.of("message", "Product doesn't exist!"), HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(productService.addProductReview(id, (int) context.getAttribute("userId"),review), HttpStatus.CREATED);
+		return new ResponseEntity<>(productService.addProductReview(id, (int) context.getAttribute("userId"), review), HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/{id}/image/upload")
+	public ResponseEntity<?> uploadProductImage(@RequestParam("file") MultipartFile image, @PathVariable long id) throws IOException {
+		return new ResponseEntity<>(productService.uploadProductImage(image, id), HttpStatus.CREATED);
 	}
 
 }

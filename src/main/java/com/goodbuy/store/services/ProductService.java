@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +31,8 @@ public class ProductService {
 	private UserDAO userDAO;
 	@Autowired
 	private ProductReviewDAO productReviewDAO;
+	@Autowired
+	private CloudinaryService cloudinaryService;
 
 	public List<ProductDTO> getAllProducts() {
 		return productDAO.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
@@ -104,6 +108,14 @@ public class ProductService {
 
 		productReviewDAO.save(newReview);
 		return Map.of("message", "Product Review added");
+	}
+
+	public Map<String, String> uploadProductImage(MultipartFile image, long id) throws IOException {
+		String uploadedFileURL = cloudinaryService.uploadFile(image, id);
+		Product product = productDAO.findById(id).get();
+		product.setImage(uploadedFileURL);
+		productDAO.save(product);
+		return Map.of("url" , uploadedFileURL);
 	}
 
 	private ProductDTO convertToDTO(Product product) {
