@@ -70,7 +70,7 @@ public class ProductService {
 
 	public ProductDTO addProduct(int userId) {
 		User user = userDAO.findById((long) userId).get();
-		Product product = new Product().builder()
+		Product product = Product.builder()
 				.user(user)
 				.name("Sample name")
 				.image("/images/sample.jpeg")
