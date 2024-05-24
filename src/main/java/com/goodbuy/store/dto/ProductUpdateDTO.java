@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductUpdateDTO {
-	private Long userId;
 	private String name;
 	private String image;
 	private String brand;

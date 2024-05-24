@@ -2,6 +2,7 @@ package com.goodbuy.store.controllers;
 
 import com.goodbuy.store.dto.ErrorResponseDTO;
 import com.goodbuy.store.dto.ProductDTO;
+import com.goodbuy.store.dto.ProductUpdateDTO;
 import com.goodbuy.store.dto.ReviewDTO;
 import com.goodbuy.store.services.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -66,6 +67,17 @@ public class ProductController {
 		return new ResponseEntity<>(product.get(), HttpStatus.OK);
 	}
 
+	@PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> updateProductById(@PathVariable long id, @RequestBody ProductUpdateDTO productChanges) {
+		Optional<ProductDTO> product = productService.getProductById(id);
+		if (product.isEmpty()) {
+			return new ResponseEntity<>(Map.of("message", "Product doesn't exist!"), HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(productService.updateProduct(id, productChanges), HttpStatus.OK);
+	}
+
+
+
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<?> deleteProductById(@PathVariable long id) {
 		Optional<ProductDTO> product = productService.getProductById(id);
@@ -83,7 +95,7 @@ public class ProductController {
 		}
 		return new ResponseEntity<>(productService.addProductReview(id, (int) context.getAttribute("userId"), review), HttpStatus.CREATED);
 	}
-	
+
 	@PostMapping("/{id}/image/upload")
 	public ResponseEntity<?> uploadProductImage(@RequestParam("file") MultipartFile image, @PathVariable long id) throws IOException {
 		return new ResponseEntity<>(productService.uploadProductImage(image, id), HttpStatus.CREATED);

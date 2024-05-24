@@ -4,6 +4,7 @@ import com.goodbuy.store.dao.ProductDAO;
 import com.goodbuy.store.dao.ProductReviewDAO;
 import com.goodbuy.store.dao.UserDAO;
 import com.goodbuy.store.dto.ProductDTO;
+import com.goodbuy.store.dto.ProductUpdateDTO;
 import com.goodbuy.store.dto.ReviewDTO;
 import com.goodbuy.store.dto.UserDTO;
 import com.goodbuy.store.entity.Product;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -47,7 +49,7 @@ public class ProductService {
 	}
 
 	public List<ProductDTO> getProductByCategoryAndKeyword(String category, String keyword) {
-		return productDAO.findByCategoryAndKeywordContainingIgnoreCase(category,keyword).stream().map(this::convertToDTO).collect(Collectors.toList());
+		return productDAO.findByCategoryAndKeywordContainingIgnoreCase(category, keyword).stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
 	public Page<ProductDTO> getProductByPage(Pageable pageable) {
@@ -93,6 +95,36 @@ public class ProductService {
 		return Map.of("message", "Product Deleted");
 	}
 
+	@Transactional
+	public ProductDTO updateProduct(Long id, ProductUpdateDTO productChanges) {
+		Optional<Product> foundProduct = productDAO.findById(id);
+		Product product = foundProduct.get();
+		if (productChanges.getName() != null && !productChanges.getName().isEmpty()) {
+			product.setName(productChanges.getName());
+		}
+		if (productChanges.getPrice() != null) {
+			product.setPrice(productChanges.getPrice());
+		}
+		if (productChanges.getDescription() != null && !productChanges.getDescription().isEmpty()) {
+			product.setDescription(productChanges.getDescription());
+		}
+		if (productChanges.getImage() != null && !productChanges.getImage().isEmpty()) {
+			product.setImage(productChanges.getImage());
+		}
+		if (productChanges.getBrand() != null && !productChanges.getBrand().isEmpty()) {
+			product.setBrand(productChanges.getBrand());
+		}
+		if (productChanges.getCategory() != null && !productChanges.getCategory().isEmpty()) {
+			product.setCategory(productChanges.getCategory());
+		}
+		if (productChanges.getCountInStock() != null) {
+			product.setCountInStock(productChanges.getCountInStock());
+		}
+		Product updatedProduct = productDAO.save(product);
+		return convertToDTO(updatedProduct);
+	}
+
+
 	public Map<String, String> addProductReview(long id, long userId, ReviewDTO review) {
 		int numberOfReviewsByAUser = productReviewDAO.findByProductIdAndUserId(id, userId).size();
 		if (numberOfReviewsByAUser > 0) {
@@ -115,7 +147,7 @@ public class ProductService {
 		Product product = productDAO.findById(id).get();
 		product.setImage(uploadedFileURL);
 		productDAO.save(product);
-		return Map.of("url" , uploadedFileURL);
+		return Map.of("url", uploadedFileURL);
 	}
 
 	private ProductDTO convertToDTO(Product product) {
