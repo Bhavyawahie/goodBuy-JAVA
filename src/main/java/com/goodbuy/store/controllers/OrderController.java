@@ -2,13 +2,11 @@ package com.goodbuy.store.controllers;
 
 import com.goodbuy.store.dto.OrderRequestDTO;
 import com.goodbuy.store.dto.PaymentResultDTO;
-import com.goodbuy.store.entity.Order;
 import com.goodbuy.store.services.OrderService;
 import com.goodbuy.store.dto.OrderDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

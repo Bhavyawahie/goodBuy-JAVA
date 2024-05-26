@@ -15,7 +15,6 @@ public class OrderItem {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = true)
 	private Long orderId;
 
 	@Column(nullable = false)
