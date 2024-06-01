@@ -14,7 +14,7 @@ public class UserAuthResponseDTO {
 	private Long id;
 	private String name;
 	private String email;
-	private Role role;
+	private Boolean isAdmin;
 	private String token;
 }
 

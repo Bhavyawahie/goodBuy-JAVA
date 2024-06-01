@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Service
@@ -31,7 +32,7 @@ public class UserAuthService {
 		var user = User.builder().name(userDTO.getName()).email(userDTO.getEmail()).password(passwordEncoder.encode(userDTO.getPassword())).role(userDTO.getRole()).build();
 		var savedUser = userDAO.save(user);
 		var jwtToken = jwtService.generateToken(user);
-		return UserAuthResponseDTO.builder().id(savedUser.getId()).name(savedUser.getName()).email(savedUser.getEmail()).role(savedUser.getRole()).token(jwtToken).build();
+		return UserAuthResponseDTO.builder().id(savedUser.getId()).name(savedUser.getName()).email(savedUser.getEmail()).isAdmin(Objects.equals(user.getRole().toString(), "ADMIN")).token(jwtToken).build();
 	}
 
 	public UserAuthResponseDTO loginUser(UserLoginDTO userLoginDTO) {
@@ -42,7 +43,7 @@ public class UserAuthService {
 		claims.put("isAdmin", admin);
 		claims.put("userId", user.getId());
 		var jwtToken = jwtService.generateToken(claims, user);
-		return UserAuthResponseDTO.builder().id(user.getId()).name(user.getName()).email(user.getEmail()).role(user.getRole()).token(jwtToken).build();
+		return UserAuthResponseDTO.builder().id(user.getId()).name(user.getName()).email(user.getEmail()).isAdmin(Objects.equals(user.getRole().toString(), "ADMIN")).token(jwtToken).build();
 
 	}
 
