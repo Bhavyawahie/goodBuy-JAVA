@@ -60,6 +60,6 @@ public class AppConfiguration implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(ProductAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/products/","/api/v1/products/{id}");
 		registry.addInterceptor(UserAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/users/**").excludePathPatterns("/api/v1/users/profile");
-		registry.addInterceptor(OrderAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/orders/**", "/api/v1/orders/{id}/deliver").excludePathPatterns("/api/v1/orders/myorders","/api/v1/orders/:id");
+		registry.addInterceptor(OrderAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/orders/", "/api/v1/orders/{id}/deliver").excludePathPatterns("/api/v1/orders/myorders","/api/v1/orders/:id");
 	}
 }
