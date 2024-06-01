@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -25,4 +27,6 @@ public class Review {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "userId")
 	private User user;
+	@Column(nullable = true)
+	private Date createdAt;
 }

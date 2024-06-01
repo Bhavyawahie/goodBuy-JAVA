@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -13,4 +15,5 @@ public class ReviewDTO {
 	private String title;
 	private Double rating;
 	private String comment;
+	private Date createdAt;
 }
