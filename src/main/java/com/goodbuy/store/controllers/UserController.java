@@ -39,7 +39,7 @@ public class UserController {
 	}
 
 	@PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody UserAdminOnlyUpdateDTO userDTO) {
+	public ResponseEntity<?> updateUser(@PathVariable long id, @RequestBody UserUpdateDTO userDTO) {
 		Optional<UserDTO> user = userService.getUserById(id);
 		if(user.isEmpty()) {
 			return new ResponseEntity<>(Map.of("error", "User not found"), HttpStatus.NOT_FOUND);
