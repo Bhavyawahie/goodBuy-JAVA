@@ -14,15 +14,15 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderRequestDTO {
 	private Long userId;
-	private List<OrderItemDTO> orderItems;
+	private List<OrderItemRequestDTO> orderItems;
 	private ShippingAddressDTO shippingAddress;
 	private String paymentMethod;
 	private PaymentResultDTO paymentResult;
 	private Double taxPrice;
 	private Double shippingPrice;
 	private Double totalPrice;
-	private Boolean isPaid;
+	private Boolean isPaid = false;
 	private Date paidAt;
-	private Boolean isDelivered;
+	private Boolean isDelivered = false;
 	private Date deliveredAt;
 }

@@ -23,7 +23,7 @@ public class OrderController {
 
 	@PostMapping
 	public ResponseEntity<OrderDTO> addOrderItems(@RequestBody OrderRequestDTO orderDTO) {
-		OrderDTO createdOrder = orderService.addOrderItems(orderDTO,(Integer) context.getAttribute("userId"));
+		OrderDTO createdOrder = orderService.addOrderItems(orderDTO,(int) context.getAttribute("userId"));
 		return ResponseEntity.status(201).body(createdOrder);
 	}
 

@@ -14,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderDTO {
 	private Long _id;
-	private Long userId;
-	private List<OrderItemDTO> orderItems;
+	private UserDTO user;
+	private List<OrderItemResponseDTO> orderItems;
 	private ShippingAddressDTO shippingAddress;
 	private String paymentMethod;
 	private PaymentResultDTO paymentResult;
@@ -26,4 +26,5 @@ public class OrderDTO {
 	private Date paidAt;
 	private Boolean isDelivered;
 	private Date deliveredAt;
+	private Date createdAt;
 }

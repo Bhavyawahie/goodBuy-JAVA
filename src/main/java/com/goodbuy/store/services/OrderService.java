@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class OrderService {
@@ -28,12 +29,16 @@ public class OrderService {
 	private OrderItemsDAO orderItemsDAO;
 
 	public OrderDTO addOrderItems(OrderRequestDTO orderDTO, long userId) {
-		List<OrderItem> orderItems = orderDTO.getOrderItems().stream().map(i -> OrderItem.builder().name(i.getName()).productId(i.getProductId()).qty(i.getQty()).image(productDAO.findById(i.getProductId()).get().getImage()).price(Double.valueOf(productDAO.findById(i.getProductId()).get().getPrice())).build()).toList();
+		List<OrderItem> orderItems = orderDTO.getOrderItems().stream().map(i -> OrderItem.builder().name(i.getName()).productId(i.getProduct()).qty(i.getQty()).image(productDAO.findById(i.getProduct()).get().getImage()).price(Double.valueOf(productDAO.findById(i.getProduct()).get().getPrice())).build()).toList();
+		PaymentResult paymentResult = null;
+		if (orderDTO.getPaymentResult() != null) {
+			PaymentResult.builder().id(orderDTO.getPaymentResult().getId()).emailAddress(orderDTO.getPaymentResult().getEmailAddress()).status(orderDTO.getPaymentResult().getStatus()).updateTime(orderDTO.getPaymentResult().getUpdateTime()).build();
+		}
 		Order order = Order.builder()
 				.user(userDAO.findById(userId).get())
 				.shippingAddress(ShippingAddress.builder().address(orderDTO.getShippingAddress().getAddress()).city(orderDTO.getShippingAddress().getCity()).state(orderDTO.getShippingAddress().getState()).pincode(orderDTO.getShippingAddress().getPincode()).build())
 				.paymentMethod(orderDTO.getPaymentMethod())
-				.paymentResult(PaymentResult.builder().id(orderDTO.getPaymentResult().getId()).emailAddress(orderDTO.getPaymentResult().getEmailAddress()).status(orderDTO.getPaymentResult().getStatus()).updateTime(orderDTO.getPaymentResult().getUpdateTime()).build())
+				.paymentResult(paymentResult)
 				.taxPrice(orderDTO.getTaxPrice())
 				.shippingPrice(orderDTO.getShippingPrice())
 				.totalPrice(orderDTO.getTotalPrice())
@@ -57,11 +62,15 @@ public class OrderService {
 
 	public OrderDTO updateOrderToPaid(long id, PaymentResultDTO paymentResultDTO) {
 		Order order = orderDAO.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
-		order.getPaymentResult().setStatus(paymentResultDTO.getStatus());
-		order.getPaymentResult().setStatus(paymentResultDTO.getStatus());
-		order.getPaymentResult().setEmailAddress(paymentResultDTO.getEmailAddress());
-		order.getPaymentResult().setUpdateTime(paymentResultDTO.getUpdateTime());
-		order.setPaidAt(new Date());
+		PaymentResult paymentResult = PaymentResult.builder()
+				.id(paymentResultDTO.getId())
+				.emailAddress(paymentResultDTO.getEmailAddress())
+				.status(paymentResultDTO.getStatus())
+				.updateTime(paymentResultDTO.getUpdateTime())
+				.build();
+		order.setPaymentResult(paymentResult);
+		order.setIsPaid(paymentResultDTO.getStatus().equals("COMPLETED") ? true : false);
+		order.setPaidAt(paymentResultDTO.getUpdateTime());
 		return mapToOrderDTO(orderDAO.save(order));
 	}
 
@@ -88,17 +97,21 @@ public class OrderService {
 				.state(o.getShippingAddress().getState())
 				.pincode(o.getShippingAddress().getPincode())
 				.build();
-		PaymentResultDTO paymentResultDTO = PaymentResultDTO
-				.builder()
-				.id(o.getPaymentResult().getId())
-				.emailAddress(o.getPaymentResult().getEmailAddress())
-				.status(o.getPaymentResult().getStatus())
-				.updateTime(o.getPaymentResult().getUpdateTime())
-				.build();
+		PaymentResultDTO paymentResultDTO = null;
+		if (o.getPaymentResult() != null) {
+			paymentResultDTO = PaymentResultDTO
+					.builder()
+					.id(o.getPaymentResult().getId())
+					.emailAddress(o.getPaymentResult().getEmailAddress())
+					.status(o.getPaymentResult().getStatus())
+					.updateTime(o.getPaymentResult().getUpdateTime())
+					.build();
+		}
+
 		OrderDTO orderDTO = OrderDTO.builder()
 				._id(o.getId())
 				.orderItems(o.getOrderItems().stream().map(i -> {
-					OrderItemDTO orderItemDTO = OrderItemDTO.builder()
+					OrderItemResponseDTO orderItemDTO = OrderItemResponseDTO.builder()
 							._id(i.getId())
 							.name(i.getName())
 							.qty(i.getQty())
@@ -108,7 +121,7 @@ public class OrderService {
 							.build();
 					return orderItemDTO;
 				}).toList())
-				.userId(o.getUser().getId())
+				.user(userDAO.findById(o.getUser().getId()).map(user -> UserDTO.builder()._id(o.getUser().getId()).email(o.getUser().getEmail()).name(o.getUser().getName()).isAdmin(Objects.equals(o.getUser().getRole().toString(), "ADMIN")).build()).get())
 				.isDelivered(o.getIsDelivered())
 				.isPaid(o.getIsPaid())
 				.paidAt(o.getPaidAt())
@@ -119,6 +132,7 @@ public class OrderService {
 				.shippingAddress(shippingAddressDTO)
 				.paymentResult(paymentResultDTO)
 				.paymentMethod(o.getPaymentMethod())
+				.createdAt(o.getCreatedAt())
 				.build();
 		return orderDTO;
 	}

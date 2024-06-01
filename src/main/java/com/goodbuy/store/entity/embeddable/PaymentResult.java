@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Embeddable
 public class PaymentResult {
-	private Long id;
+	private String id;
 	private String emailAddress;
 	private String status;
 	private Date updateTime;
