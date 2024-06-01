@@ -69,7 +69,7 @@ public class OrderService {
 				.updateTime(paymentResultDTO.getUpdateTime())
 				.build();
 		order.setPaymentResult(paymentResult);
-		order.setIsPaid(paymentResultDTO.getStatus().equals("COMPLETED") ? true : false);
+		order.setIsPaid(paymentResultDTO.getStatus().equals("COMPLETED"));
 		order.setPaidAt(paymentResultDTO.getUpdateTime());
 		return mapToOrderDTO(orderDAO.save(order));
 	}

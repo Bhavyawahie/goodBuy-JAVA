@@ -8,6 +8,7 @@ import com.goodbuy.store.entity.Role;
 import com.goodbuy.store.entity.User;
 import com.goodbuy.store.utils.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,9 +24,13 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserAuthService {
 
+	@Autowired
 	private final JwtService jwtService;
+	@Autowired
 	private final UserDAO userDAO;
+	@Autowired
 	private final PasswordEncoder passwordEncoder;
+	@Autowired
 	private final AuthenticationManager authenticationManager;
 
 	public UserAuthResponseDTO registerUser(UserRegistrationDTO userDTO) {

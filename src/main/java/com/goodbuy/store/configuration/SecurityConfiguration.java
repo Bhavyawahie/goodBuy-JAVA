@@ -33,7 +33,6 @@ public class SecurityConfiguration {
 				.securityMatcher("/api/v1/products/")
 				.authorizeHttpRequests(req ->
 						req.requestMatchers(HttpMethod.GET).permitAll()
-
 				)
 				.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler()))
 				.authorizeHttpRequests(req ->
