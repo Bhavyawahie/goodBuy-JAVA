@@ -5,13 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductDTO {
 	private long _id;
-	private UserDTO user;
+	private long user;
 	private String name;
 	private String brand;
 	private String category;
@@ -21,4 +23,5 @@ public class ProductDTO {
 	private String image;
 	private Long price;
 	private Long countInStock;
+	private List<ReviewDTO> reviews;
 }

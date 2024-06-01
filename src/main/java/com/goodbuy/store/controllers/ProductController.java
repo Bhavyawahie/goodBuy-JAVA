@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,12 +31,12 @@ public class ProductController {
 	private HttpServletRequest context;
 
 	@GetMapping(value = "/")
-	public ResponseEntity<List<ProductDTO>> getProducts(@RequestParam(required = false) String keyword,
+	public ResponseEntity<?> getProducts(@RequestParam(required = false) String keyword,
 														@RequestParam(required = false) String category,
-														@RequestParam(required = false) Integer pageNumber) {
+														@RequestParam(required = false) String pageNumber) {
 		List<ProductDTO> products;
 		if (pageNumber != null) {
-			Pageable pageable = PageRequest.of(pageNumber, 5);
+			Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), 5);
 			Page<ProductDTO> productPage = productService.getFilteredProducts(keyword, category, pageable);
 			products = productPage.getContent();
 		} else {
@@ -49,7 +50,11 @@ public class ProductController {
 				products = productService.getAllProducts();
 			}
 		}
-		return new ResponseEntity<>(products, HttpStatus.OK);
+		Map <String, Object> response = new HashMap<>();
+		response.put("products", products);
+		response.put("pages", 1);
+		response.put("page", 1);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)

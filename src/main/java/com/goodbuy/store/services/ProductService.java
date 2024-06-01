@@ -2,6 +2,7 @@ package com.goodbuy.store.services;
 
 import com.goodbuy.store.dao.ProductDAO;
 import com.goodbuy.store.dao.ProductReviewDAO;
+import com.goodbuy.store.dao.ReviewDAO;
 import com.goodbuy.store.dao.UserDAO;
 import com.goodbuy.store.dto.ProductDTO;
 import com.goodbuy.store.dto.ProductUpdateDTO;
@@ -35,6 +36,8 @@ public class ProductService {
 	private ProductReviewDAO productReviewDAO;
 	@Autowired
 	private CloudinaryService cloudinaryService;
+	@Autowired
+	private ReviewDAO reviewDAO;
 
 	public List<ProductDTO> getAllProducts() {
 		return productDAO.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
@@ -136,6 +139,7 @@ public class ProductService {
 				.comment(review.getComment())
 				.product(productDAO.findById(id).get())
 				.user(userDAO.findById(userId).get())
+				.createdAt(review.getCreatedAt())
 				.build();
 
 		productReviewDAO.save(newReview);
@@ -152,6 +156,7 @@ public class ProductService {
 
 	private ProductDTO convertToDTO(Product product) {
 		ProductDTO productDTO = new ProductDTO();
+		List<Review> productReviews = reviewDAO.findByProductId(product.getId());
 		User productUser = product.getUser();
 		UserDTO userDTO = UserDTO.builder()
 				._id(productUser.getId())
@@ -160,7 +165,8 @@ public class ProductService {
 				.isAdmin(Objects.equals(productUser.getRole().toString(), "ADMIN"))
 				.build();
 		BeanUtils.copyProperties(product, productDTO);
-		productDTO.setUser(userDTO);
+		productDTO.setUser(productDTO.getUser());
+		productDTO.setReviews(productReviews.stream().map(r -> ReviewDTO.builder().title(r.getTitle()).comment(r.getComment()).rating(r.getRating()).createdAt(r.getCreatedAt()).build()).toList());
 		productDTO.set_id(product.getId());
 		return productDTO;
 	}
