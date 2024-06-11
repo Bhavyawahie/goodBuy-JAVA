@@ -56,14 +56,4 @@ public class SecurityConfiguration {
 	public CustomAccessDeniedHandler accessDeniedHandler() {
 		return new CustomAccessDeniedHandler(new ObjectMapper());
 	}
-
-	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("https://lucent-sunshine-152090.netlify.app/"));
-		configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "PATCH", "DELETE", "OPTIONS, TRACE"));
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
 }
