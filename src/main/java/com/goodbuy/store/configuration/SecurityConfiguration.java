@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -34,6 +35,7 @@ public class SecurityConfiguration {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
+				.cors(cors -> cors.configurationSource(apiConfigurationSource()))
 				.csrf(AbstractHttpConfigurer::disable)
 				.securityMatcher("/api/v1/products/")
 				.authorizeHttpRequests(req ->
@@ -52,6 +54,15 @@ public class SecurityConfiguration {
 
 		return http.build();
 	}
+	CorsConfigurationSource apiConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList("https://lucent-sunshine-152090.netlify.app/"));
+		configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS"));
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
+
 	@Bean
 	public CustomAccessDeniedHandler accessDeniedHandler() {
 		return new CustomAccessDeniedHandler(new ObjectMapper());
