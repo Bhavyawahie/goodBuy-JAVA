@@ -72,7 +72,7 @@ public class AppConfiguration implements WebMvcConfigurer {
 	}
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/api/v1/**").allowedOriginPatterns("https://lucent-sunshine-152090.netlify.app/**").allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "TRACE");
+		registry.addMapping("/api/v1/**").allowedMethods("*").allowedHeaders("*").allowedOrigins("*");
 	}
 
 }
