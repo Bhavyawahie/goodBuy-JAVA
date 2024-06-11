@@ -35,25 +35,16 @@ public class ProductController {
 														@RequestParam(required = false) String category,
 														@RequestParam(required = false) String pageNumber) {
 		List<ProductDTO> products;
-		if (pageNumber != null) {
-			Pageable pageable = PageRequest.of(Integer.parseInt(pageNumber), 5);
-			Page<ProductDTO> productPage = productService.getFilteredProducts(keyword, category, pageable);
-			products = productPage.getContent();
-		} else {
-			if (keyword != null && category != null) {
-				products = productService.getProductByCategoryAndKeyword(category, keyword);
-			} else if (keyword != null) {
-				products = productService.getProductByKeyword(keyword);
-			} else if (category != null) {
-				products = productService.getProductByCategory(category);
-			} else {
-				products = productService.getAllProducts();
-			}
-		}
+		int pageSize = 8;
+		int pageNo = Integer.parseInt(pageNumber);
+		Pageable pageable = PageRequest.of( pageNo-1, pageSize);
+		Page<ProductDTO> productPage = productService.getFilteredProducts(keyword, category, pageable);
+		products = productPage.getContent();
+
 		Map <String, Object> response = new HashMap<>();
 		response.put("products", products);
-		response.put("pages", 1);
-		response.put("page", 1);
+		response.put("pages", productPage.getTotalPages());
+		response.put("page", pageNo);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

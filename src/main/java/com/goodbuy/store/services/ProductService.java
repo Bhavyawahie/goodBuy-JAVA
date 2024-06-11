@@ -165,7 +165,7 @@ public class ProductService {
 				.isAdmin(Objects.equals(productUser.getRole().toString(), "ADMIN"))
 				.build();
 		BeanUtils.copyProperties(product, productDTO);
-		productDTO.setUser(productDTO.getUser());
+		productDTO.setUser(product.getUser().getId());
 		productDTO.setReviews(productReviews.stream().map(r -> ReviewDTO.builder().title(r.getTitle()).comment(r.getComment()).rating(r.getRating()).createdAt(r.getCreatedAt()).build()).toList());
 		productDTO.set_id(product.getId());
 		return productDTO;
