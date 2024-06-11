@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -61,5 +62,9 @@ public class AppConfiguration implements WebMvcConfigurer {
 		registry.addInterceptor(ProductAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/products/","/api/v1/products/{id}");
 		registry.addInterceptor(UserAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/users/**").excludePathPatterns("/api/v1/users/profile");
 		registry.addInterceptor(OrderAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/orders/", "/api/v1/orders/{id}/deliver").excludePathPatterns("/api/v1/orders/myorders","/api/v1/orders/:id");
+	}
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**");
 	}
 }
