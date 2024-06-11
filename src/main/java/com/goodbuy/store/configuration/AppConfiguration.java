@@ -63,9 +63,4 @@ public class AppConfiguration implements WebMvcConfigurer {
 		registry.addInterceptor(UserAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/users/**").excludePathPatterns("/api/v1/users/profile");
 		registry.addInterceptor(OrderAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/orders/", "/api/v1/orders/{id}/deliver").excludePathPatterns("/api/v1/orders/myorders","/api/v1/orders/:id");
 	}
-	@Override
-	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/api/v1/**")
-				.allowedOrigins("https://lucent-sunshine-152090.netlify.app/").allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
-	}
 }
