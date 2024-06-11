@@ -8,6 +8,7 @@ import com.goodbuy.store.entity.Role;
 import com.goodbuy.store.entity.User;
 import com.goodbuy.store.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,6 +19,8 @@ public class UserService {
 	private UserDAO userDAO;
 	@Autowired
 	private JwtService jwtService;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	public List<UserDTO> getAllUsers() {
 		return userDAO.findAll().stream().map(this::convertToDTO).toList();
@@ -63,7 +66,7 @@ public class UserService {
 				user.setEmail(userChanges.getEmail());
 			}
 			if(userChanges.getPassword() != null && !userChanges.getPassword().isEmpty()) {
-				user.setPassword(userChanges.getPassword());
+				user.setPassword(passwordEncoder.encode(userChanges.getPassword()));
 			}
 			User savedUser = userDAO.save(user);
 			Boolean admin = savedUser.getRole().equals(Role.ADMIN);

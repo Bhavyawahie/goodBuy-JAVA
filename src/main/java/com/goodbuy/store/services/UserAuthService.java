@@ -36,7 +36,11 @@ public class UserAuthService {
 	public UserAuthResponseDTO registerUser(UserRegistrationDTO userDTO) {
 		var user = User.builder().name(userDTO.getName()).email(userDTO.getEmail()).password(passwordEncoder.encode(userDTO.getPassword())).role(userDTO.getRole()).build();
 		var savedUser = userDAO.save(user);
-		var jwtToken = jwtService.generateToken(user);
+		Boolean admin = user.getRole().equals(Role.ADMIN);
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("isAdmin", admin);
+		claims.put("userId", user.getId());
+		var jwtToken = jwtService.generateToken(claims, user);
 		return UserAuthResponseDTO.builder().id(savedUser.getId()).name(savedUser.getName()).email(savedUser.getEmail()).isAdmin(Objects.equals(user.getRole().toString(), "ADMIN")).token(jwtToken).build();
 	}
 
