@@ -35,7 +35,13 @@ public class SecurityConfiguration {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.cors(cors -> cors.configurationSource(apiConfigurationSource()))
+				.cors(cors -> cors.configurationSource(request -> {
+					CorsConfiguration corsConfiguration = new CorsConfiguration();
+					corsConfiguration.setAllowedOrigins(Arrays.asList("*"));
+					corsConfiguration.setAllowedMethods(Arrays.asList("*"));
+					corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
+					return corsConfiguration;
+				}))
 				.csrf(AbstractHttpConfigurer::disable)
 				.securityMatcher("/api/v1/products/")
 				.authorizeHttpRequests(req ->
@@ -53,14 +59,6 @@ public class SecurityConfiguration {
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
-	}
-	CorsConfigurationSource apiConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("https://lucent-sunshine-152090.netlify.app/"));
-		configuration.setAllowedMethods(Arrays.asList("GET","POST", "PUT", "DELETE", "OPTIONS"));
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
 	}
 
 	@Bean
