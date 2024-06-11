@@ -64,19 +64,6 @@ public class AppConfiguration implements WebMvcConfigurer {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
-	public CorsFilter corsFilter() {
-		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		final CorsConfiguration config = new CorsConfiguration();
-		config.setAllowCredentials(true);
-		// Don't do this in production, use a proper list  of allowed origins
-		config.setAllowedOrigins(List.of("https://lucent-sunshine-152090.netlify.app/"));
-		config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept"));
-		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"));
-		source.registerCorsConfiguration("/**", config);
-		return new CorsFilter(source);
-	}
-
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(ProductAdminOnlyRouteInterceptor).addPathPatterns("/api/v1/products/","/api/v1/products/{id}");
@@ -85,7 +72,7 @@ public class AppConfiguration implements WebMvcConfigurer {
 	}
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**");
+		registry.addMapping("/api/v1/**").allowedOriginPatterns("https://lucent-sunshine-152090.netlify.app/**").allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "TRACE");
 	}
 
 }
