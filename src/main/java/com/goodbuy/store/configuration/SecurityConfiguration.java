@@ -35,13 +35,6 @@ public class SecurityConfiguration {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.cors(cors -> cors.configurationSource(request -> {
-					CorsConfiguration corsConfiguration = new CorsConfiguration();
-					corsConfiguration.setAllowedOrigins(Arrays.asList("*"));
-					corsConfiguration.setAllowedMethods(Arrays.asList("*"));
-					corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
-					return corsConfiguration;
-				}))
 				.csrf(AbstractHttpConfigurer::disable)
 				.securityMatcher("/api/v1/products/")
 				.authorizeHttpRequests(req ->
@@ -54,20 +47,12 @@ public class SecurityConfiguration {
 								.anyRequest()
 								.authenticated()
 				)
-				.cors(cors -> cors.configurationSource(request -> {
-							CorsConfiguration corsConfiguration = new CorsConfiguration();
-							corsConfiguration.setAllowedOrigins(Arrays.asList("*"));
-							corsConfiguration.setAllowedMethods(Arrays.asList("*"));
-							corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
-							return corsConfiguration;
-				}))
 				.sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
 				.authenticationProvider(authenticationProvider)
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
-
 	@Bean
 	public CustomAccessDeniedHandler accessDeniedHandler() {
 		return new CustomAccessDeniedHandler(new ObjectMapper());

@@ -15,17 +15,20 @@ public class UserAdminOnlyRouteInterceptor implements HandlerInterceptor {
 	@Autowired
 	private JwtService jwtService;
 	public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler) throws Exception {
-		final String authorizationHeader = request.getHeader("Authorization");
-		final String token = authorizationHeader.substring(7);
-		Claims claims = jwtService.extractClaims(token);
-		if(request.getHeader("Authorization") == null) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-		}
-
-		if(claims.containsKey("isAdmin") && claims.get("isAdmin").equals(true)) {
+		if(request.getMethod().equals("OPTIONS")) {
 			return true;
 		}
-		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		if(request.getHeader("Authorization") != null) {
+			final String authorizationHeader = request.getHeader("Authorization");
+			final String token = authorizationHeader.substring(7);
+			Claims claims = jwtService.extractClaims(token);
+			if(claims.containsKey("isAdmin") && claims.get("isAdmin").equals(true)) {
+				return true;
+			}
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return false;
+		}
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		return false;
 	}
 }
